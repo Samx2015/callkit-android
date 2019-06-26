@@ -54,7 +54,7 @@ public class VideoPlugin implements IPluginModule, IPluginRequestPermissionResul
         conversationType = extension.getConversationType();
         targetId = extension.getTargetId();
 
-        String[] permissions = CallKitUtils.getCallpermissions();
+        String[] permissions = CallKitUtils.getVideoCallPermissions();
         if (PermissionCheckUtil.checkPermissions(currentFragment.getActivity(), permissions)) {
             startVideoActivity(extension);
         } else {

@@ -669,6 +669,11 @@ public class MultiAudioCallActivity extends BaseCallActivity {
     }
 
     @Override
+    protected String[] getPermissions() {
+        return CallKitUtils.getAudioCallPermissions();
+    }
+
+    @Override
     public void onBackPressed() {
         return;
     }

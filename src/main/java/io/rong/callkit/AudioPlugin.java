@@ -55,7 +55,7 @@ public class AudioPlugin implements IPluginModule, IPluginRequestPermissionResul
         conversationType = extension.getConversationType();
         targetId = extension.getTargetId();
         Log.i(TAG,"---- targetId=="+targetId);
-        String[] permissions = CallKitUtils.getCallpermissions();
+        String[] permissions = CallKitUtils.getAudioCallPermissions();
         if (PermissionCheckUtil.checkPermissions(currentFragment.getActivity(), permissions)) {
             Log.i(TAG,"---- startAudioActivity ----");
             startAudioActivity(currentFragment, extension);

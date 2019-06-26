@@ -1,6 +1,5 @@
 package io.rong.callkit;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -8,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.http.SslError;
@@ -34,17 +32,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import cn.rongcloud.rtc.core.RendererCommon;
 import cn.rongcloud.rtc.engine.view.RongRTCVideoView;
 import cn.rongcloud.rtc.utils.FinLog;
 import io.rong.callkit.util.BluetoothUtil;
 import io.rong.callkit.util.CallKitUtils;
-import io.rong.callkit.util.GlideUtils;
 import io.rong.callkit.util.HeadsetInfo;
 import io.rong.calllib.CallUserProfile;
 import io.rong.calllib.RongCallClient;
@@ -54,7 +49,6 @@ import io.rong.calllib.message.MultiCallEndMessage;
 import io.rong.common.RLog;
 import io.rong.imkit.RongContext;
 import io.rong.imkit.RongIM;
-import io.rong.imkit.tools.RongWebviewActivity;
 import io.rong.imkit.utilities.PermissionCheckUtil;
 import io.rong.imkit.widget.AsyncImageView;
 import io.rong.imlib.RongIMClient;
@@ -150,7 +144,7 @@ public class MultiVideoCallActivity extends BaseCallActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
-                String[] callPermissions = CallKitUtils.getCallpermissions();
+                String[] callPermissions = CallKitUtils.getVideoCallPermissions();
                 boolean granted = CallKitUtils.checkPermissions(this, callPermissions);
                 if (granted) {
                     RongCallClient.getInstance().onPermissionGranted();
@@ -237,6 +231,11 @@ public class MultiVideoCallActivity extends BaseCallActivity {
         bundle.putString("callAction", RongCallAction.ACTION_RESUME_CALL.getName());
         bundle.putInt("mediaType", RongCallCommon.CallMediaType.VIDEO.getValue());
         return intentAction;
+    }
+
+    @Override
+    protected String[] getPermissions() {
+        return CallKitUtils.getVideoCallPermissions();
     }
 
     @Override
