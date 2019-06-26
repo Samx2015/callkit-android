@@ -12,7 +12,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -34,15 +33,12 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bailingcloud.bailingvideo.engine.binstack.util.FinLog;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.callkit.util.BluetoothUtil;
 import io.rong.callkit.util.CallKitUtils;
-import io.rong.callkit.util.HeadsetInfo;
 import io.rong.callkit.util.HeadsetPlugReceiver;
 import io.rong.calllib.IRongCallListener;
 import io.rong.calllib.RongCallClient;
@@ -54,9 +50,9 @@ import io.rong.imkit.manager.AudioPlayManager;
 import io.rong.imkit.manager.AudioRecordManager;
 import io.rong.imkit.utilities.PermissionCheckUtil;
 import io.rong.imkit.utils.NotificationUtil;
-import io.rong.imlib.model.UserInfo;
 
 import static io.rong.callkit.CallFloatBoxView.showFB;
+import static io.rong.callkit.util.CallKitUtils.isDebug;
 import static io.rong.callkit.util.CallKitUtils.isDial;
 
 /**
@@ -274,6 +270,12 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
         }
     }
 
+    public void cancelTime(){
+        if(handler!=null && updateTimeRunnable !=null){
+            handler.removeCallbacks(updateTimeRunnable);
+        }
+    }
+
     public long getTime() {
         return time;
     }
@@ -379,6 +381,9 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
             case OTHER_DEVICE_HAD_ACCEPTED:
                 text = getString(R.string.rc_voip_call_other);
                 break;
+//                case CONN_USER_BLOCKED:
+//                text = getString(R.string.rc_voip_call_conn_user_blocked);
+//                break;
         }
         if (text != null) {
             showShortToast(text);
@@ -402,7 +407,7 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
 
     @Override
     public void onRemoteUserLeft(String userId, RongCallCommon.CallDisconnectedReason reason) {
-
+        RLog.i(TAG,"onRemoteUserLeft userId :"+userId+", CallDisconnectedReason :"+reason.name());
     }
 
     @Override
@@ -412,6 +417,10 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
 
     @Override
     public void onError(RongCallCommon.CallErrorCode errorCode) {
+        if(RongCallCommon.CallErrorCode.ENGINE_NOT_FOUND.getValue()==errorCode.getValue() && isDebug(BaseCallActivity.this)){
+            Toast.makeText(this, getResources().getString(R.string.rc_voip_engine_notfound), Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     @Override
@@ -525,8 +534,14 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
 
     }
 
+
     @Override
-    public void onNetWorkLossRate(int lossRate) {
+    public void onNetworkReceiveLost(int lossRate) {
+
+    }
+
+    @Override
+    public void onNetworkSendLost(int lossRate) {
 
     }
 
@@ -595,11 +610,6 @@ public class BaseCallActivity extends BaseNoActionBarActivity implements IRongCa
         intent.putExtra("callAction", RongCallAction.ACTION_RESUME_CALL.getName());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 1000, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationUtil.showNotification(this, title, content, pendingIntent, CALL_NOTIFICATION_ID, Notification.DEFAULT_LIGHTS);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @TargetApi(23)

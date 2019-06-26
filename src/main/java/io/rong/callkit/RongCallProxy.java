@@ -124,9 +124,16 @@ public class RongCallProxy implements IRongCallListener {
     }
 
     @Override
-    public void onNetWorkLossRate(int lossRate) {
+    public void onNetworkSendLost(int lossRate) {
         if (mCallListener != null) {
-            mCallListener.onNetWorkLossRate(lossRate);
+            mCallListener.onNetworkSendLost(lossRate);
+        }
+    }
+
+    @Override
+    public void onNetworkReceiveLost(int lossRate) {
+        if (mCallListener != null) {
+            mCallListener.onNetworkReceiveLost(lossRate);
         }
     }
 
